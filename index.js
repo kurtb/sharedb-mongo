@@ -249,8 +249,9 @@ ShareDbMongo.prototype.getSnapshot = function(collectionName, id, fields, option
   this.getCollection(collectionName, function(err, collection) {
     if (err) return callback(err);
     var query = {_id: id};
-    var projection = getProjection(fields, options);
-    collection.find(query).limit(1).project(projection).next(function(err, doc) {
+    // DocumentDB w/ Mongo driver doesn't return _v - We instead just get all fields
+    // var projection = getProjection(fields, options);
+    collection.find(query).limit(1)/*.project(projection)*/.next(function(err, doc) {
       if (err) return callback(err);
       var snapshot = (doc) ? castToSnapshot(doc) : new MongoSnapshot(id, 0, null, undefined);
       callback(null, snapshot);
